@@ -1,1 +1,35 @@
-
+pipeline {
+  agent none
+  stages {
+    stage('Back-end') {
+      agent {
+        docker { image 'maven:3.8.1-adoptopenjdk-11' }
+      }
+      steps {
+        sh 'git --version'
+        script {
+          // Write the HelloWorld.java file
+          writeFile file: 'HelloWorld.java', text: '''
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World from dockers!");
+    }
+}
+'''
+          // Compile the Java program
+          sh 'javac HelloWorld.java'
+          // Run the Java program
+          sh 'java HelloWorld'
+        }
+      }
+    }
+    stage('Front-end') {
+      agent {
+        docker { image 'node:16-alpine' }
+      }
+      steps {
+        sh 'node --version'
+      }
+    }
+  }
+}
